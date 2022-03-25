@@ -13,42 +13,52 @@ parameters = {
     "apikey": "P0HM4GKCWWF3ECIG"
 }
 
-    ## STEP 1: Use https://www.alphavantage.co/documentation/#daily
+# STEP 1: Use https://www.alphavantage.co/documentation/#daily
 # When stock price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
 
-response = requests.get(STOCK_ENDPOINT, params=parameters)
-data = response.json()["Time Series (Daily)"]
+news_response = requests.get(STOCK_ENDPOINT, params=parameters)
+data = news_response.json()["Time Series (Daily)"]
 data_list = [value for (key, value) in data.items()]
 
 #Get yesterday's closing stock price. Hint: Yo can perform list comprehensions on Python dictionaries.
 # e.g. [new_value for (key, value) in dictionary.items()]
 yesterday_data = data_list[0]
 yesterday_closingprice = float(yesterday_data["4. close"])
-print(yesterday_closingprice)
+
 
 #Get the day before yesterday's closing stock price
 dayb_yesterday = data_list[1]
 dayb_yesterday_closingprice = float(dayb_yesterday["4. close"])
-print(dayb_yesterday_closingprice)
+
 
 #Find the positive difference between 1 and 2. e.g. 40 - 20 = -20, but the positive difference is 20.
 # Hint: https://www.w3schools.com/python/ref_func_abs.asp
 difference = abs(yesterday_closingprice - dayb_yesterday_closingprice)
 print(difference)
 
-#TODO 4. - Work out the percentage difference in price between closing price yesterday and
+#Work out the percentage difference in price between closing price yesterday and
 # closing price the day before yesterday.
+percent = (difference / float(yesterday_closingprice)) * 100
+
+print(percent)
+
+#If TODO4 percentage is greater than 5 then print("Get News").
+# Instead of printing ("Get News"), use the News API to get articles related to the COMPANY_NAME.
+# STEP 2: https://newsapi.org/
+# Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME.
+if percent > 1:
+    para = {
+        "apikey": "cc94947cd3504922825f93714cf76843",
+        "qInTitle": COMPANY_NAME
+    }
+
+    news_response = requests.get(url=NEWS_ENDPOINT, params=para)
+    articles = news_response.json()["articles"]
+    print(articles)
 
 
-
-#TODO 5. - If TODO4 percentage is greater than 5 then print("Get News").
-
-    ## STEP 2: https://newsapi.org/ 
-    # Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME. 
-
-#TODO 6. - Instead of printing ("Get News"), use the News API to get articles related to the COMPANY_NAME.
-
-#TODO 7. - Use Python slice operator to create a list that contains the first 3 articles. Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
+#TODO 7. - Use Python slice operator to create a list that contains the first 3 articles.
+#Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
 
 
     ## STEP 3: Use twilio.com/docs/sms/quickstart/python
